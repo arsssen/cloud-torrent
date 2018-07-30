@@ -16,8 +16,8 @@ import (
 	"time"
 
 	"github.com/NYTimes/gziphandler"
-	"github.com/jpillora/cloud-torrent/engine"
-	"github.com/jpillora/cloud-torrent/static"
+	"cloud-torrent/engine"
+	"cloud-torrent/static"
 	"github.com/jpillora/cookieauth"
 	"github.com/jpillora/requestlog"
 	"github.com/jpillora/scraper/scraper"
@@ -28,15 +28,16 @@ import (
 //Server is the "State" portion of the diagram
 type Server struct {
 	//config
-	Title      string `help:"Title of this instance" env:"TITLE"`
-	Port       int    `help:"Listening port" env:"PORT"`
-	Host       string `help:"Listening interface (default all)"`
-	Auth       string `help:"Optional basic auth in form 'user:password'" env:"AUTH"`
-	ConfigPath string `help:"Configuration file path"`
-	KeyPath    string `help:"TLS Key file path"`
-	CertPath   string `help:"TLS Certicate file path" short:"r"`
-	Log        bool   `help:"Enable request logging"`
-	Open       bool   `help:"Open now with your default browser"`
+	Title               string `help:"Title of this instance" env:"TITLE"`
+	Port                int    `help:"Listening port" env:"PORT"`
+	Host                string `help:"Listening interface (default all)"`
+	Auth                string `help:"Optional basic auth in form 'user:password'" env:"AUTH"`
+	ConfigPath          string `help:"Configuration file path"`
+	KeyPath             string `help:"TLS Key file path"`
+	CertPath            string `help:"TLS Certificate file path" short:"r"`
+	Log                 bool   `help:"Enable request logging"`
+	Open                bool   `help:"Open now with your default browser"`
+	SearchProvidersPath string `help:"path to load search providers config from"`
 	//http handlers
 	files, static http.Handler
 	scraper       *scraper.Handler

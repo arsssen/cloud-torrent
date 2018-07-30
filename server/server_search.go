@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/jpillora/backoff"
+	"net/url"
 )
 
 const searchConfigURL = "https://gist.githubusercontent.com/jpillora/4d945b46b3025843b066adf3d685be6b/raw/scraper-config.json"
@@ -31,15 +32,33 @@ var fetches = 0
 var currentConfig, _ = normalize(defaultSearchConfig)
 
 func (s *Server) fetchSearchConfig() error {
-	resp, err := http.Get(searchConfigURL)
+	var newConfig []byte
+	scURL := searchConfigURL
+	if s.SearchProvidersPath != "" {
+		scURL = s.SearchProvidersPath
+	}
+	u, err := url.Parse(scURL)
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
-	newConfig, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return err
+
+	if u.Scheme != "" {  // remote
+		resp, err := http.Get(scURL)
+		if err != nil {
+			return err
+		}
+		defer resp.Body.Close()
+		newConfig, err = ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return err
+		}
+	} else {  //local file
+		newConfig, err = ioutil.ReadFile(scURL)
+		if err != nil {
+			return err
+		}
 	}
+
 	newConfig, err = normalize(newConfig)
 	if err != nil {
 		return err
@@ -54,7 +73,7 @@ func (s *Server) fetchSearchConfig() error {
 	s.state.SearchProviders = s.scraper.Config
 	s.state.Push()
 	currentConfig = newConfig
-	log.Printf("Loaded new search providers")
+	log.Printf("Loaded new search providers from %s", scURL)
 	return nil
 }
 
