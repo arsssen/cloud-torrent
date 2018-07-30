@@ -61,6 +61,7 @@ func (s *Server) fetchSearchConfig() error {
 
 	newConfig, err = normalize(newConfig)
 	if err != nil {
+		log.Printf("scraper config: %s", err.Error())
 		return err
 	}
 	fetches++
